@@ -2,6 +2,12 @@
 
 A feature-rich To-Do List application built with Node.js, Express, and MongoDB.
 
+## Author
+**Sarah Kamdar**  
+2nd Year Student  
+Chandubhai S. Patel Institute of Technology, CHARUSAT  
+Roll No: 23CS031
+
 ## Features
 
 - Create, edit, and delete tasks
