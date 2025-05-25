@@ -1,0 +1,231 @@
+/* Background & body */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #83a4d4, #b6fbff);
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Heading */
+h1 {
+  color: #fff;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Form styles */
+.form-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+select,
+input[type="date"] {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+}
+
+select {
+  background: white;
+  min-width: 120px;
+}
+
+button {
+  padding: 12px 18px;
+  font-size: 16px;
+  background: #00c6ff;
+  background: linear-gradient(to right, #0072ff, #00c6ff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(to right, #0052cc, #00aaff);
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+/* Task list */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-item {
+  background: white;
+  padding: 15px 20px;
+  margin: 10px 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+}
+
+.task-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-details {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.category, .priority, .due-date {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #f0f0f0;
+}
+
+.priority-high {
+  border-left: 4px solid #ff4444;
+}
+
+.priority-medium {
+  border-left: 4px solid #ffbb33;
+}
+
+.priority-low {
+  border-left: 4px solid #00C851;
+}
+
+.completed {
+  opacity: 0.7;
+}
+
+.completed .task-content span {
+  text-decoration: line-through;
+}
+
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.edit-btn {
+  background: #ffbb33;
+}
+
+.delete-btn {
+  background: #ff4444;
+}
+
+.edit-btn:hover {
+  background: #ffaa22;
+}
+
+.delete-btn:hover {
+  background: #ff3333;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 10px;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.modal h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal .form-group {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.modal input[type="text"],
+.modal select,
+.modal input[type="date"] {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.modal button[type="submit"] {
+  width: 100%;
+  margin-top: 10px;
+}

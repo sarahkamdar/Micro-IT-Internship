@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>To-Do App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>My To-Do List</h1>
+
+    <form id="taskForm" action="/add" method="POST">
+      <div class="form-group">
+        <input type="text" name="task" placeholder="Enter your task" required />
+        <select name="category" required>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Health">Health</option>
+          <option value="Other">Other</option>
+        </select>
+        <select name="priority" required>
+          <option value="Low">Low Priority</option>
+          <option value="Medium">Medium Priority</option>
+          <option value="High">High Priority</option>
+        </select>
+        <input type="date" name="dueDate" />
+        <button type="submit">Add Task</button>
+      </div>
+    </form>
+
+    <div class="filters">
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Health">Health</option>
+        <option value="Other">Other</option>
+      </select>
+      <select id="priorityFilter">
+        <option value="all">All Priorities</option>
+        <option value="Low">Low Priority</option>
+        <option value="Medium">Medium Priority</option>
+        <option value="High">High Priority</option>
+      </select>
+    </div>
+
+    <ul id="taskList"></ul>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Edit Task</h2>
+      <form id="editForm">
+        <div class="form-group">
+          <input type="text" id="editText" name="text" required />
+          <select id="editCategory" name="category" required>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Health">Health</option>
+            <option value="Other">Other</option>
+          </select>
+          <select id="editPriority" name="priority" required>
+            <option value="Low">Low Priority</option>
+            <option value="Medium">Medium Priority</option>
+            <option value="High">High Priority</option>
+          </select>
+          <input type="date" id="editDueDate" name="dueDate" />
+          <button type="submit">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentTaskId = null;
+    const modal = document.getElementById('editModal');
+    const closeBtn = document.getElementsByClassName('close')[0];
+    const editForm = document.getElementById('editForm');
+
+    // Close modal when clicking the X
+    closeBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    async function loadTasks() {
+      const res = await fetch('/tasks');
+      const tasks = await res.json();
+      const list = document.getElementById('taskList');
+      list.innerHTML = '';
+
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const priorityFilter = document.getElementById('priorityFilter').value;
+
+      const filteredTasks = tasks.filter(task => {
+        if (categoryFilter !== 'all' && task.category !== categoryFilter) return false;
+        if (priorityFilter !== 'all' && task.priority !== priorityFilter) return false;
+        return true;
+      });
+
+      filteredTasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = `task-item priority-${task.priority.toLowerCase()} ${task.completed ? 'completed' : ''}`;
+        
+        const taskContent = document.createElement('div');
+        taskContent.className = 'task-content';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
+        checkbox.onclick = async () => {
+          await fetch(`/tasks/${task._id}/complete`, { method: 'PUT' });
+          loadTasks();
+        };
+
+        const taskText = document.createElement('span');
+        taskText.textContent = task.text;
+        if (task.completed) taskText.style.textDecoration = 'line-through';
+
+        const taskDetails = document.createElement('div');
+        taskDetails.className = 'task-details';
+        taskDetails.innerHTML = `
+          <span class="category">${task.category}</span>
+          <span class="priority">${task.priority}</span>
+          ${task.dueDate ? `<span class="due-date">Due: ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
+        `;
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.className = 'edit-btn';
+        editBtn.onclick = () => editTask(task);
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.className = 'delete-btn';
+        delBtn.onclick = async () => {
+          await fetch(`/delete/${task._id}`, { method: 'DELETE' });
+          loadTasks();
+        };
+
+        taskContent.appendChild(checkbox);
+        taskContent.appendChild(taskText);
+        li.appendChild(taskContent);
+        li.appendChild(taskDetails);
+        li.appendChild(editBtn);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function editTask(task) {
+      currentTaskId = task._id;
+      document.getElementById('editText').value = task.text;
+      document.getElementById('editCategory').value = task.category;
+      document.getElementById('editPriority').value = task.priority;
+      document.getElementById('editDueDate').value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
+      modal.style.display = "block";
+    }
+
+    editForm.onsubmit = async function(e) {
+      e.preventDefault();
+      const formData = {
+        text: document.getElementById('editText').value,
+        category: document.getElementById('editCategory').value,
+        priority: document.getElementById('editPriority').value,
+        dueDate: document.getElementById('editDueDate').value || null
+      };
+
+      try {
+        await fetch(`/tasks/${currentTaskId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+        modal.style.display = "none";
+        loadTasks();
+      } catch (error) {
+        console.error('Error updating task:', error);
+      }
+    };
+
+    document.getElementById('categoryFilter').addEventListener('change', loadTasks);
+    document.getElementById('priorityFilter').addEventListener('change', loadTasks);
+    loadTasks();
+  </script>
+</body>
+</html>
